@@ -1,0 +1,1 @@
+Colocar imagens referente a arquitetura do projeto Terraform

@@ -1,0 +1,34 @@
+# Configurações gerais
+debug: false
+quiet: true
+timeout: 5m
+insecure: false
+
+# Configuração do cache
+cache:
+  dir: /home/$USER/.cache/trivy
+  ttl: 1m
+  backend: memory
+
+# Configurações de varredura e saída
+severity:
+  - CRITICAL
+  - HIGH
+  - MEDIUM
+format: table
+exit-code: 1
+
+# Configurações de misconfiguration
+misconfiguration:
+  include-non-failures: false
+  scanners:
+    - terraform
+  terraform:
+    exclude-downloaded-modules: true
+
+# Diretórios a serem ignorados
+skip-dirs:
+  - .terraform/
+  - addons/
+
+ignorefile: .trivyignore

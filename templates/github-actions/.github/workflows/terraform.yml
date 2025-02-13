@@ -1,0 +1,72 @@
+name: 'Terraform Azure Deployment'
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  ARM_BACKEND_RESOURCE_GROUP: ${{ secrets.TF_VAR_ARM_BACKEND_RESOURCE_GROUP }}
+  ARM_BACKEND_STORAGE_ACCOUNT: ${{ secrets.TF_VAR_ARM_BACKEND_STORAGE_ACCOUNT }}
+  ARM_BACKEND_CONTAINER: ${{ secrets.TF_VAR_ARM_BACKEND_CONTAINER }}
+  ARM_BACKEND_KEY: ${{ secrets.TF_VAR_ARM_BACKEND_KEY }}
+  ARM_BACKEND_ACCESS_KEY: ${{ secrets.TF_VAR_ARM_BACKEND_ACCESS_KEY }}
+  WORKING_DIR: './terraform'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.7.0'
+
+      - name: Terraform Format
+        id: fmt
+        run: terraform fmt -check
+        working-directory: ${{ env.WORKING_DIR }}
+        continue-on-error: true
+
+      - name: Terraform Init
+        id: init
+        run: |
+          terraform init \
+          -backend-config="resource_group_name=${{ secrets.TF_VAR_ARM_BACKEND_RESOURCE_GROUP }}" \
+          -backend-config="storage_account_name=${{ secrets.TF_VAR_ARM_BACKEND_STORAGE_ACCOUNT }}" \
+          -backend-config="container_name=${{ secrets.TF_VAR_ARM_BACKEND_CONTAINER }}" \
+          -backend-config="key=${{ secrets.TF_VAR_ARM_BACKEND_KEY }}" \
+          -backend-config="access_key=${{ secrets.TF_VAR_ARM_BACKEND_ACCESS_KEY }}"
+        working-directory: ${{ env.WORKING_DIR }}
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate
+        working-directory: ${{ env.WORKING_DIR }}
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -no-color -var-file=common.tfvars
+        working-directory: ${{ env.WORKING_DIR }}
+        # continue-on-error: true
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve -var-file=common.tfvars
+        working-directory: ${{ env.WORKING_DIR }}

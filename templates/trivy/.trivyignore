@@ -1,0 +1,16 @@
+AVD-AZU-0042
+AVD-AZU-0041
+AVD-AZU-0016
+AVD-AZU-0014
+
+
+
+
+
+
+
+# Descrição
+# AVD-AZU-0042 (HIGH): RBAC is not enabled on cluster
+# AVD-AZU-0041 (CRITICAL): Cluster does not limit API access to specific IP addresses
+# AVD-AZU-0016 (HIGH): Key Vault does not have a soft delete enabled
+# AVD-AZU-0014 (HIGH): Key Vault does not have a purge protection enabled
