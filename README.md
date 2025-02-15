@@ -63,7 +63,7 @@ Dentro dos diretórios de templates, você encontrará também arquivos e subpas
 1. **📥 Clone o repositório**  
    Faça o clone do repositório em sua máquina:
    ```bash
-   git clone https://github.com/diogofrj/templates-tf-modules.git
+   git clone https://github.com/diogofrj/terraform-template-modules.git
    ```
 
 2. **⚙️ Configure as Variáveis de Ambiente**  
